@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fraud Detection</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/FraudDetection.css') }}">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+AI Real Estate
+</div>
+
+<a href="Dashboard.html">
+🏠 Dashboard
+</a>
+
+</nav>
+
+<div class="container">
+
+<h1>AI Fraud Detection</h1>
+
+<form>
+
+<div class="row">
+
+<div class="inputBox">
+
+<label>Property Price (₹)</label>
+
+<input
+type="number"
+id="propertyPrice"
+placeholder="Enter Property Price">
+
+</div>
+
+<div class="inputBox">
+
+<label>Market Price (₹)</label>
+
+<input
+type="number"
+id="marketPrice"
+placeholder="Enter Market Price">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="inputBox">
+
+<label>Owner Name</label>
+
+<input
+type="text"
+id="owner"
+placeholder="Owner Name">
+
+</div>
+
+<div class="inputBox">
+
+<label>Property Type</label>
+
+<select id="propertyType">
+
+<option>Apartment</option>
+<option>Villa</option>
+<option>Independent House</option>
+<option>Commercial</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="inputBox">
+
+<label>Document Number</label>
+
+<input
+type="text"
+id="document"
+placeholder="Enter Document Number">
+
+</div>
+
+<div class="inputBox">
+
+<label>Owner Verified</label>
+
+<select id="verified">
+
+<option>Yes</option>
+<option>No</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button
+type="button"
+onclick="checkFraud()">
+
+Check Fraud
+
+</button>
+
+</form>
+
+<div class="result">
+
+<h2 id="fraudResult">
+
+Fraud Status :
+Waiting...
+
+</h2>
+
+</div>
+
+</div>
+<script src="{{ url_for('static', filename='js/FraudDetection.js') }}"></script>
+
+</body>
+</html>

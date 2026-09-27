@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/InteractiveMap.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/static.css') }}"> -->
+    <title>AI Real Estate Price Prediction</title>
+
+    <style>
+        .navbar-custom {
+            margin-top: 20px;
+            padding: 15px 25px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 35px rgba(20, 30, 60, 0.08);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 21px;
+            font-weight: 800;
+            color: #1d4ed8;
+            cursor: pointer;
+        }
+
+        .logo i {
+            font-size: 25px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .nav-button {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+        }
+        :root {
+            --primary: #635bff;
+            --primary-dark: #4f46e5;
+            --secondary: #0f172a;
+            --text: #172033;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --surface: #ffffff;
+            --background: #f6f8fc;
+            --success: #059669;
+            --success-bg: #ecfdf5;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --shadow: 0 24px 70px rgba(15, 23, 42, .10);
+        }
+
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 8% 5%, rgba(99, 91, 255, .13), transparent 28%),
+                radial-gradient(circle at 92% 12%, rgba(14, 165, 233, .10), transparent 25%),
+                var(--background);
+        }
+
+       
+
+
+       
+
+
+        /* ---------- Main ---------- */
+        .page {
+            width: min(1180px, calc(100% - 32px));
+            margin: 38px auto 70px;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.45fr .55fr;
+            gap: 30px;
+            padding: clamp(28px, 5vw, 50px);
+            margin-bottom: 24px;
+            color: #fff;
+            border-radius: 28px;
+            background:
+                linear-gradient(120deg, rgba(15, 23, 42, .98), rgba(49, 46, 129, .95));
+            box-shadow: 0 28px 70px rgba(15, 23, 42, .18);
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero::before {
+            width: 360px;
+            height: 360px;
+            right: -130px;
+            top: -180px;
+            background: rgba(99, 91, 255, .28);
+        }
+
+        .hero::after {
+            width: 230px;
+            height: 230px;
+            right: 170px;
+            bottom: -170px;
+            background: rgba(14, 165, 233, .13);
+        }
+
+        .hero-content, .hero-stats { position: relative; z-index: 1; }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 11px;
+            margin-bottom: 17px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 999px;
+            background: rgba(255,255,255,.08);
+            color: #c7d2fe;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            max-width: 700px;
+            margin: 0;
+            font-size: clamp(30px, 4vw, 50px);
+            line-height: 1.05;
+            letter-spacing: -.045em;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: 17px 0 0;
+            color: #cbd5e1;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .hero-stats {
+            display: grid;
+            align-content: center;
+            gap: 12px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 14px;
+            border: 1px solid rgba(255,255,255,.11);
+            border-radius: 16px;
+            background: rgba(255,255,255,.07);
+        }
+
+        .stat i {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 11px;
+            color: #c7d2fe;
+            background: rgba(99,91,255,.2);
+        }
+
+        .stat strong { display: block; font-size: 14px; }
+        .stat span { display: block; margin-top: 2px; color: #94a3b8; font-size: 12px; }
+
+        /* ---------- Form card ---------- */
+        .card {
+            padding: clamp(22px, 4vw, 38px);
+            background: rgba(255,255,255,.96);
+            border: 1px solid rgba(226,232,240,.9);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 26px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .section-icon {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            color: var(--primary);
+            background: #eef2ff;
+            border-radius: 13px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font-size: 21px;
+            letter-spacing: -.02em;
+        }
+
+        .section-heading p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .required-note {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .required-note span { color: var(--danger); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 19px;
+        }
+
+        .form-group {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 0 8px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        label i {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        input, select {
+            width: 100%;
+            height: 50px;
+            padding: 0 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            color: #172033;
+            background: #f8fafc;
+            font: inherit;
+            font-size: 14px;
+            transition: .2s ease;
+        }
+
+        select { cursor: pointer; }
+
+        input::placeholder { color: #94a3b8; }
+
+        input:hover, select:hover {
+            border-color: #cbd5e1;
+            background: #fff;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(99,91,255,.11);
+        }
+
+        .field-hint {
+            margin-top: 6px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .submit-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #eef2f7;
+        }
+
+        .submit-row .submit-info {
+            flex: 1;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        
+      
+
+        /* ---------- Result / error ---------- */
+        .result {
+            position: relative;
+            overflow: hidden;
+            margin-top: 26px;
+            padding: 28px;
+            text-align: center;
+            border: 1px solid #a7f3d0;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+        }
+
+        .result::after {
+            content: "\f1ad";
+            position: absolute;
+            right: 22px;
+            bottom: -18px;
+            color: rgba(5,150,105,.08);
+            font: 100px "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .result-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--success);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .result h2 {
+            position: relative;
+            z-index: 1;
+            margin: 8px 0 2px;
+            color: #064e3b;
+            font-size: clamp(28px, 5vw, 42px);
+            letter-spacing: -.035em;
+        }
+
+        .result p {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .error {
+            margin-top: 22px;
+            padding: 15px 17px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            border-radius: 13px;
+            background: var(--danger-bg);
+            font-size: 13px;
+        }
+
+        /* ---------- Footer ---------- */
+        .footer-note {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .footer-note i { color: var(--primary); }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 850px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .stat {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .topbar { height: 64px; }
+
+            .brand-text { display: none; }
+
+            .page {
+                width: min(100% - 20px, 1180px);
+                margin-top: 18px;
+            }
+
+            .hero {
+                padding: 26px 21px;
+                border-radius: 21px;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .form-group.full-width { grid-column: auto; }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+                margin-bottom: 20px;
+            }
+
+            .submit-row {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+    <nav class="navbar-custom d-flex justify-content-between align-items-center">
+
+            <div class="logo" onclick="window.location.href = '/'">
+                <i class="fa-solid fa-building"></i>
+                <span>AI Real Estate</span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="/#modules">Features</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/map">Map</a></li>
+            </ul>
+
+            <button class="nav-button" onclick="openPricePrediction()">
+                Predict Price
+            </button>
+
+        </nav>
+    <main class="page">
+        <section class="hero">
+            <div class="hero-content">
+                <div class="eyebrow">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    AI-Powered Valuation
+                </div>
+
+                <h1>Find the estimated value of your property.</h1>
+
+                <p>
+                    Enter the property details below and let the prediction model
+                    estimate its market price using the information you provide.
+                </p>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <div>
+                        <strong>Data-driven</strong>
+                        <span>Model-based estimate</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <div>
+                        <strong>Location aware</strong>
+                        <span>City & locality inputs</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fa-solid fa-bolt"></i>
+                    <div>
+                        <strong>Fast prediction</strong>
+                        <span>Results in seconds</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="section-heading">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <div>
+                        <h2>Property Details</h2>
+                        <p>Provide accurate information for a better estimate.</p>
+                    </div>
+                </div>
+
+                <div class="required-note"><span>*</span> Required fields</div>
+            </div>
+
+            <form action="/pred" method="POST">
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="Bedroom_Num">
+                            <i class="fa-solid fa-bed"></i>
+                            Number of Bedrooms
+                        </label>
+                        <input type="number" id="Bedroom_Num" name="Bedroom_Num"
+                               min="1" max="20" step="1" placeholder="e.g. 3" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Area">
+                            <i class="fa-solid fa-ruler-combined"></i>
+                            Area (sq.ft)
+                        </label>
+                        <input type="number" id="Area" name="Area"
+                               min="500" step="0.01" placeholder="e.g. 1500" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Floor_Num">
+                            <i class="fa-solid fa-building"></i>
+                            Floor Number
+                        </label>
+                        <input type="number" id="Floor_Num" name="Floor_Num"
+                               min="0" max="200" step="1" placeholder="e.g. 5" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Total_Floor">
+                            <i class="fa-solid fa-layer-group"></i>
+                            Total Floors
+                        </label>
+                        <input type="number" id="Total_Floor" name="Total_Floor"
+                               min="1" max="200" step="1" placeholder="e.g. 15" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Furnish">
+                            <i class="fa-solid fa-couch"></i>
+                            Furnishing Status
+                        </label>
+                        <select id="Furnish" name="Furnish" required>
+                            <option value="" selected hidden>Select furnishing</option>
+                            <option value="Unfurnished">Unfurnished</option>
+                            <option value="Semifurnished">Semi-furnished</option>
+                            <option value="Furnished">Furnished</option>
+                            <option value="Unknown">Unknown</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Age">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            Property Age
+                        </label>
+                        <select id="Age" name="Age" required>
+                            <option value="" selected hidden>Select property age</option>
+                            <option value="Under Construction">Under Construction</option>
+                            <option value="0-1 Year Old">0-1 Year Old</option>
+                            <option value="1-5 Year Old">1-5 Year Old</option>
+                            <option value="5-10 Year Old">5-10 Year Old</option>
+                            <option value="10+ Year Old">10+ Year Old</option>
+                            <option value="Unknown">Unknown</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Facing">
+                            <i class="fa-solid fa-compass"></i>
+                            Facing Direction
+                        </label>
+                        <select id="Facing" name="Facing" required>
+                            <option value="" selected hidden>Select facing</option>
+                            <option value="North">North</option>
+                            <option value="South">South</option>
+                            <option value="East">East</option>
+                            <option value="West">West</option>
+                            <option value="North-East">North-East</option>
+                            <option value="North-West">North-West</option>
+                            <option value="South-East">South-East</option>
+                            <option value="South-West">South-West</option>
+                            <option value="Unknown">Unknown</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Property_Type">
+                            <i class="fa-solid fa-house-chimney"></i>
+                            Property Type
+                        </label>
+                        <select id="Property_Type" name="Property_Type" required>
+                            <option value="" selected hidden>Select property type</option>
+                            <option value="Residential Apartment">Residential Apartment</option>
+                            <option value="Independent/Builder Floor">Independent/Builder Floor</option>
+                            <option value="Independent House/Villa">Independent House/Villa</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="City">
+                            <i class="fa-solid fa-city"></i>
+                            City
+                        </label>
+                        <select id="City" name="City" required>
+                            <option value="" selected hidden>Select city</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Gurgaon">Gurgaon</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Kolkata">Kolkata</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="LOCALITY_NAME">
+                            <i class="fa-solid fa-location-dot"></i>
+                            Locality
+                        </label>
+                        <input type="text" id="LOCALITY_NAME" name="LOCALITY_NAME"
+                               list="locality" placeholder="e.g. Majiwada" autocomplete="off" required>
+                        <datalist id="locality"></datalist>
+                        <div class="field-hint">Start typing to find a locality from the available dataset.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Is_Luxury">
+                            <i class="fa-solid fa-gem"></i>
+                            Luxury Property
+                        </label>
+                        <select id="Is_Luxury" name="Is_Luxury" required>
+                            <option value="" selected hidden>Select</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Is_Freehold">
+                            <i class="fa-solid fa-file-shield"></i>
+                            Freehold Property
+                        </label>
+                        <select id="Is_Freehold" name="Is_Freehold" required>
+                            <option value="" selected hidden>Select</option>
+                            <option value="1">Yes</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="submit-row">
+                    <div class="submit-info">
+                        <i class="fa-solid fa-circle-info"></i>
+                        The result is an AI/model-based estimate and may vary from the actual market price.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Predict Property Price
+                    </button>
+                </div>
+            </form>
+
+            {% if prediction %}
+            <div class="result">
+                <div class="result-badge">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Prediction generated
+                </div>
+                <h2>₹ {{ "{:,.2f}".format(prediction) }}</h2>
+                <p>Estimated property market price</p>
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="error">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>{{ error }}</div>
+            </div>
+            {% endif %}
+        </section>
+<script>
+    const locality_names = ['Sector 84 Gurgaon', 'Sector 81 Gurgaon', 'Sector 112 Gurgaon', 'Sector 104 Gurgaon', 'Sector 74 Gurgaon', 'Sector 102 Gurgaon', 'Sector 66 Gurgaon', 'Sector 110 Gurgaon', 'Sector 109 Gurgaon', 'Sector 65 Gurgaon', 'Sector 37D Gurgaon', 'Sector 113 Gurgaon ', 'Sector 111 Gurgaon', 'Block B Sushant Lok Phase - 3', 'Sector 62 Gurgaon', 'Sector 60 Gurgaon', 'Sector 57 Gurgaon', 'Sector 59 Gurgaon', 'Sector 37C Gurgaon', 'Sector 53 Gurgaon', 'Sector 28 Gurgaon', 'Sector 67 Gurgaon', 'Sector 54 Gurgaon', 'Sector 106 Gurgaon', 'Sector 108 Gurgaon', 'Sector 61 Gurgaon', 'DLF Phase 2', 'Sector 82 Gurgaon', 'South City 2', 'DLF Phase 5', 'Sector 90 Gurgaon', 'Sector 103 Gurgaon', 'Sector 63 Gurgaon', 'Sector 107 Gurgaon', 'Malibu Town', 'Sector 63A Gurgaon', 'Uppals Southend', 'Sector 68 Gurgaon', 'Sector 48 Gurgaon', 'Sector 50 Gurgaon', 'Sector 36A Gurgaon', 'Sector 110 A Gurgaon', 'Sector 51 Gurgaon', 'Sector 31 Gurgaon', 'Palam Vihar', 'Sector 23 Gurgaon', 'Sector 45 Gurgaon', 'Sector 67A Gurgaon', 'Sector-33 Sohna', 'Sohna', 'Sector 36 Sohna', 'Sector 71 Gurgaon', 'Sector 82A Gurgaon', 'Sector 14 Gurgaon', 'Sector 88A Gurgaon', 'Sushant Lok Phase 3', 'Sector 72 Gurgaon', 'Sector 3 Gurgaon', 'Sector 85 Gurgaon', 'Sector 49 Gurgaon', 'Block C Palam Vihar', 'Nirvana Country', 'Sector 70 Gurgaon', 'Sector 88B Gurgaon', 'Sector 99 Gurgaon', 'Sector 99A Gurgaon', 'Sector 92 Gurgaon', 'Sector 69 Gurgaon', 'DLF Phase 4', 'Gwal Pahari', 'Sector 83 Gurgaon', 'Sector 79 Gurgaon', 'Sector 89 Gurgaon', 'Sector 42 Gurgaon', 'Sector 70A Gurgaon', 'Sector 52 Gurgaon', 'Sector 86 Gurgaon', 'DLF Phase 1', 'A Block Sushant Lok Phase 1', 'Sushant Lok Phase 1', 'Sector 47 Gurgaon', 'Sector 26 Gurgaon', 'Sushant Lok Phase 2', 'Sector 56 Gurgaon', 'Ardee City', 'Sector 27 Gurgaon', 'Sector 46 Gurgaon', 'Sector 55 Gurgaon', 'Sector 89 A Gurgaon', 'Sector 93 Gurgaon', 'Heritage City', 'Sushant Lok', 'Sector 43 Gurgaon', 'B Block Sushant Lok Phase 1', 'South City 1', 'Sector 22 Gurgaon', 'Sector 95 Gurgaon', 'C Block Mayfield Garden', 'C Block Pocket I Mayfield Garden', 'Rosewood', 'Suncity', 'Sector 76 Gurgaon', 'Sector 4 Gurgaon', 'Sector 15 Part 2', 'Valley View Estate', 'DLF Phase 3', 'Sector 1 Imt Manesar', 'Mayfield Garden', 'Shyam Kunj', 'sector 58 Gurgaon', 'Sector 91 Gurgaon', 'Sohna Road', 'Vigyan Vihar', 'New Palam Vihar', 'Block D, New Palam Vihar', 'Block D New Palam Vihar Phase 2', 'A Block Sushant Lok Phase - 3', 'sector 47 , sector 51', 'Block M South City 1', 'DLF CITY', 'Sector 73 Gurgaon', 'C Block Sushant Lok Phase 1', 'Golf Course Ext Road ', 'New golf course ext road', 'Sector 77 Gurgaon', 'Block K South City 1', 'Sector 30 Gurgaon', 'Sector-35 Sohna', 'New Colony', 'Sector 15 Gurgaon', 'Rattan Garden', 'Sector 33 Gurgaon', 'Block M DLF phase 2', 'Udyog Vihar Industrial Area Phase 6', 'Laxman Vihar', 'Dharam Colony', 'Sector 5 Gurgaon', 'Block-A, DLF City Phase 1', 'Sector 78 Gurgaon', 'Sector 7 Extension', 'Sector 9 Gurgaon', 'Greenwood City', 'Block N, Mayfield garden', 'MG Road', 'Sector 38 Gurgaon', 'Block C Sushant Lok Phase - 3', 'Block C Ardee City', 'Westerlies', 'Ansal Plaza', 'Sector 2 Gurgaon', 'Sector 95A Gurgaon', 'Block F, Sushant Lok Phase - 2', 'Sector 41 Gurgaon', 'sector 28 , Golf course road', 'Southern Peripheral Road ', 'South City', 'Block B Sector 2 Palam Vihar', 'Sector 10A Gurgaon', 'Rosewood City', 'Sector 40 Gurgaon', 'D Block Sushant Lok Phase 1', 'sector 83 vatika floor', 'Sector 39 Gurgaon', 'Pataudi Road', 'New Gurgaon', 'New Palam Vihar Phase 1', 'Sai Kunj', 'Sector 21 Gurgaon', 'Sector 17 Gurgaon', 'Sector 23A Gurgaon', 'Sushant Lok 3 Extension', 'Chakkarpur', 'Sector 7 Gurgaon', 'Ashok Vihar Phase 1', 'Sector-5 Sohna', 'Sector-2 Sohna', 'Bissar', 'Sec 90', 'Block E DLF City Phase 1', 'sector 62emaar uarban oasis', 'Farrukh Nagar', 'Sector 80 Gurgaon', 'Dayanand Colony', 'Phase 2 Sushant Lok 3', 'Ramgarh', 'Sector 64 Gurgaon', 'Sector 9A Sector 9 Gurgaon', 'Sector 9A Gurgaon', 'Jharsa', 'Civil Lines', 'Block C Greenwood City', 'Sector 10 Gurgaon', 'Sector 22B Gurgaon', 'Shivpuri', 'Gurgaon', 'Dwarka Expressway Gurgaon', 'Palam Vihar Extension', 'Valley View Estate gwal Pahari', 'Cyber City', 'Sector 83 New Gurgaon', 'Jyoti Park', 'Sector - 33, Sohna, Gurgaon', 'Sector 1A IMT Manesar', 'Gundlapochampalli', 'Nizampet', 'Nanakramguda', 'Kollur', 'Madinaguda', 'Shaikpet', 'Bowrampet', 'Tellapur', 'Kokapet', 'Nallagandla', 'Bachupally', 'Narsingi', 'Miyapur', 'Kapra', 'Tukkuguda', 'Financial District', 'Chengicherla', 'Gagillapur', 'Kompally', 'Beeramguda', 'Manikonda', 'Chandanagar', 'Mokila', 'Uppal', 'Shamshabad', 'Gachibowli', 'Puppalaguda', 'Patancheru', 'Adibatla', 'Shamirpet', 'Pragathi Nagar', 'Yapral', 'Hi Tech City', 'Gopanpally', 'Aminpur', 'LB Nagar', 'Habsiguda', 'Bandlaguda Jagir', 'Mallampet', 'Gajulramaram', 'Kondapur', 'Dr AS Rao Nagar', 'Isnapur', 'Kukatpally', 'Bahadurpally', 'Osman Nagar', 'Sainikpuri', 'Medchal', 'Rampally', 'Nagaram', 'Ameerpet', 'Nagole', 'Shad nagar', 'Suchitra', 'Hastinapuram', 'Adikmet', 'Pocharam', 'Hayathnagar', 'Attapur', 'Mallapur', 'Ramachandrapuram', 'Vasanthapuri Colony', 'Saidabad', 'Champapet', 'Gowlidoddy', 'Haripuri Colony', 'Chintalmet', 'Vikarabad', 'BHEL', 'New Nagole Colony', 'Alwal', 'Sanath Nagar', 'Lecturers Colony', 'Vattinagulapally', 'Padmanagar Phase 2', 'Hyderguda', 'Peerzadiguda', 'Chintal', 'Krishna Reddy Pet', 'Parimala Nagar', 'Shilpa Hills', 'Marredpally', 'Pedso 2', 'Masab Tank', 'Vijayapuri Colony', 'New Maruthi Nagar', 'barkatpura', 'East Marredpally', 'Sarvodaya Colony', 'Lalitha Nagar', 'Alkapuri', 'Mylargadda', 'Ghatkesar', 'Allauddin Basthi', 'Zahra Nagar', 'OU Colony', 'Migh Colony', 'Sri Nagar Colony', 'New Malakpet', 'Cherlapally', 'Manchirevula Village', 'Koheda', 'Appa Junction ', 'West Marredpally', 'Medchal & Kalkal Village', 'Vaidehi Nagar', 'Anjanadri Nagar', 'West Venkatapuram', 'Sreenivasa Nagar', 'Mailardevpally', 'Gandimaisamma', '5th Phase KPHB', 'Puranapool', 'B.N.REDDY NAGAR,VINAYAKA HILLS,ROAD NO:-14, ALMAS GUDA', 'Bhoiguda', 'Ahmedguda', 'Tolichowki', 'Narayanguda', 'Nandamuri Nagar', 'Somajiguda', 'Bolarum', 'Serlingampally', 'Bairagiguda', 'Moula Ali', 'Jawahar nagar', 'Nacharam', 'Nallakunta', 'Chilkalguda', 'chandrayangutta', 'Old Alwal', 'Mahendra Hills', 'Balanagar', 'Vanasthalipuram', 'Harithavanam Colony', 'Injapur', 'TurkaYamjal', 'Yellareddyguda', 'Malkajgiri', 'Ramakrishnapuram ', 'Begumpet', 'Mansoorabad', 'Meerpet', 'Hyder Nagar', 'Medipally', 'Osmania University Teachers Colony', 'Sri Balaji Layout', 'Rajendra Nagar', 'Kavadiguda', 'Santosh Nagar', 'Old Safilguda', 'Sr Naik Nagar', 'Boduppal', 'Vijaya Nagar Colony', 'Bhanur', 'Raviryal', 'Kalyanpuri', 'Prasanth Nagar', 'Durga Vihar Colony', 'Madhapur', 'Rameshwaram Banda', 'New Bowenpally', 'Narapally', 'New Green City', 'Mayuri Nagar', 'Sai Harsha Nagar', 'Boosareddy Guda', 'Hari Hara Puram', 'Diamond Hills', 'Amberpet', 'Banjara hills', 'Srinagar Colony', 'East Maruti Nagar', 'Vengalarao Nagar', 'Kowkoor village', 'Gowdavalli', 'Film Nagar', 'Hanuman Nagar Colony', 'Manik Sai Enclave', 'Muthangi', 'Red Hills', 'Chiryala Village', 'AP Textbook Colony', 'Trimulgherry', 'Kanajiguda', 'Anand Banjara Colony', 'Laxmiguda', 'SBH Colony', 'Pradham Puri Colony', 'Hafeezpet', 'Moosarambagh', 'Bhagya Nagar Colony', 'RK Puram', 'Ravindra Nagar', 'Kowkur', 'Goutami Enclave', 'Pragati Nagar', 'Munganoor', 'Tatianaram', 'Anand Nagar Colony', 'Moti Nagar', 'Jubilee Hills', 'Almas guda', 'East Anand Bagh', 'Tarnaka', 'Subhash Chandra Nagar', 'Reti Bowli ', 'Ramdas Nagar', 'Maheshwaram', 'Gurram Guda', 'Esamiya Bazaar', 'Hydershakote', 'New Sai Nagar Colony', 'Sayeedabad Colony', 'Saket', 'Dammaiguda', 'kaali mandir', 'Kushaiguda', 'Karmanghat', 'Turkapally', 'Balapur', 'Sri Ram Nagar Colony', 'Geological Survey of India Colony', 'Indresham', 'AGI Colony', 'Registration Colony', 'Manneguda', 'Patancheruvu', 'Santoshnagar', 'Pati', 'Dundigal', 'Nadargul', 'Keesara', 'Srisailam Highway', 'PJR Layout', 'Miyapur Road', 'Khajaguda', 'Balamrai', 'Ashraf Nagar', 'Defence Colony', 'Budvel', 'Dilsukh Nagar', 'Kistareddypet', 'Ibrahimpatnam', 'Tellpur Osmannagar', 'Langer House', 'Peeramcheru', 'Sun City', 'BN reddy nagar', 'MJ Colony', 'udayagiri colony bahadurpally', 'Velimela', 'Manchirevulu', '6th Phase KPHB', 'Ramanthapur', 'hafeezpet gokul plots', 'Sai Pruthvi Enclave', 'alwal,su', 'Wadakpally', 'Sultanpur', 'Gandhamguda', 'Peeranchuruvu', 'Kongara Kalan', 'HMT Swarnapuri Colony', 'Laxmi Narayan Nagar Colony', 'mehdipatnam humayun nagar', 'Banjara hills road no 2', 'Canara Nagar', 'panchvati colony manikonda', 'Snehapuri Colony', 'Sai Maruti Enclave', 'Bhaskar Rao Nagar Colony', 'kistareddypet near beeramguda common', 'Alkapoor Township', 'Bowenpally', 'Mouryas Ranga Prasad Avenue', 'Patrika Nagar', 'kolluru', 'Pasumamula', 'Thumkunta', 'Venkateshwara Colony', 'Muppas Panchavati Colony', 'Panchavati Layout', 'Kundanpally', 'Senore Colony', 'NARSHING', 'Shankarpally', 'P Janardhan Reddy Nagar', 'Thimmapur', 'Kothur', 'Mucherla', 'Bongulur', 'Kandukur', 'Fab City', 'Sikh Village', 'YousufGuda', 'Patighanpur', 'Ameenpur Village', 'Qutbullapur', 'Puppalguda Junction ORR', '3rd Phase KPHB', 'Cheriyal', 'QUTUBULLAPUR, SUCHITRA CIRCLE', 'Kothaguda', 'Vittal Rao Nagar', 'Alkapur', 'Whitefield', 'Kondakal', 'BAHADURPALLY', 'Phase 1 Vanasthalipuram.A10', 'miyapur. Sector 2', 'alkapuri township', 'alkapur township', 'Alkapur township', 'Kismathpur', 'Janachaitanya Colony', 'Chaitanya Enclave', 'Aditya Nagar', 'Anjaiah Nagar', 'Telecom Nagar', 'Gouthami Enclave', 'Alluri Seetaramaraju Nagar', 'alwal ,near selecttakies', 'alwal,3 floor', 'sri ramnagar colony kondapur', 'IDA Nacharam', 'Kandi', 'FINANCIAL DISTRICT GACHIBOWLI', 'HITEC City', 'ncl north', 'ncl north suchitra', 'north ncl', 'Sanjeeva rao serene county', 'Laxmi Nagar', 'mehdipatnam humayun Nagar', 'Bazar Ghat', 'Banjara hills road number 10', 'Aditya Nagar Colony toli chowki', 'Adarsh Nagar', 'Kadthal', 'Velimela homes', 'VELIMEELA', 'velimella, kollur', 'Suraram', 'Gowrelly', 'Shanakar Nagar', 'Visaka Nagar', 'Machabolaram', 'Beerumguda', 'Alkapuri township', 'Alkapur Twp', 'Pupaalguda', 'kollaru', 'Gandipet', 'Annojiguda', 'pati kolluru', 'patancheruvu', 'Engineers Enclave', 'Ankushapur', 'chintal,near balanagr', 'Chinthal', 'Beside My home Mangala', 'kondapur Beside My home Mangala', 'Shantinagar Colony', 'Tirumala Hills', 'Secretariat Colony', 'Masjid Banda', 'Banjarahills Road No.1', 'Hakimpet', 'KPR Colony', 'Neknampur', 'Jeedimetla', 'Moosapet', 'Padmavti Colony', 'ADJUSENT TO ORR', 'Kokapet Junction', 'kismatpur', 'Parvathapur', 'Lingampally', 'Muthawalliguda', 'chinna cherlapally', 'Sanjeeva Reddy Nagar', 'Attapur Ring Road', 'Chanda Naik Nagar', 'cheeryal, keesara mdl', 'VR colony, Chinna cherlapally,', 'Ramgopalpet, secundrabad', 'Sriram Nagar', 'Bolarum-Alwal', 'Puppalguda, Manikonda jagir', 'Puppalguda, Manikonda Jagir', 'Jubilee Hills Extension, shaiket', 'chengicherla, Uppal', 'ZEE family daba, Kompally', 'Balakrishna Nagar', 'RC Puram', 'Lakdaram', 'Ambedkar Nagar', 'Panjagutta', 'Saroor nagar', 'Chintalkunta', 'Shanti Nagar Colony', 'Lanco Hills', 'Kardhanur', 'Mac Society', 'Prakash Nagar', 'Bandam Kommu', 'Rajarajeshwari Nagar', 'Kavuri Hills', 'Padma Rao nagar', 'Nandigama', 'Hasthinapuram Central', 'QUTUBULLAPUR KOMPALLY', 'Vidya nagar', 'QUTUBULLAPUR, JAGADGIRI GUTTA - SUCHITRA CIRCLE', 'QUTUBULLAPUR, KPHB SUCHITRA ROAD', 'QUTUBULLAPUR, JEEDIMETLA', 'Gokhale Nagar', 'Raghavendra Colony', 'Gulmohar Park Colony', 'Bagh Amberpet', 'Huda Layout', 'KPHB', 'Addagutta', 'KUKATAPALLY', 'Safilguda', 'Dairy Farm Road', 'Old Bowenpally', 'Lothkunta', 'Bollaram', 'Paparayadu Nagar', 'Tara Nagar', 'Venkataramana Enclave', 'Chitkul', 'Thorrur', 'Patelguda', 'Muttangi', 'Shilpa Nagar', 'Indira Nagar', 'banjara hills road no 12', 'Anandbagh', 'madhapur kakatheya hills', 'Gayathri Nagar Colony', 'Izzat Nagar', 'ECIL', 'Tellapur, Gachibowli', 'aditya nagar , nallagandla', 'Chandra Nagar', 'GOPANAPALLY,TELLAPUR', 'LAKDARAM , PATANCHERUV', 'Anjaneya Nagar', 'ISNAPUR, PATANCHERUVU', 'Sheriguda,KOLLUR', 'Kondakal PHASE2', 'Puppalaguda,GACHIBOWLI', 'CHIRAYU VILLAS,BACHUPALLY', 'matha bhuvaneshwari colony', 'Huda colony, Mehdipatnam', 'Chingicherla', 'kukatpally kphb hyd', 'radika to dammaiguda road', 'JAYABHERI PARK KOMPALLY', 'HYDERABAD PATI', 'Jayabheri Pine Valley', 'MIYAPUR MET', 'moulalali', 'chendr nagr,alwal', 'alwal,near michale school', 'alwal,after michale school', 'near michale school,alwal', 'alwal,near michale', 'Czech Colony', 'Sriram Nagar ', 'balapoor Hyderabad', 'Goutham Nagar', 'Mettuguda', 'Kothapet', 'manikonda dollar hills', 'hayatt palace', 'PATANCHERU MAIN ROAD', 'PATANCHERUVA NEAR', 'PATANCHERUVU MAIN ROAD', 'LIGAMPALLY,CHANDA NAGAR', 'RAMACHANDRAPURAM,BHEL', 'LINGAMPALLY X ROADS', 'PATANCHERUVU,SAI RAM COLONY', 'PATANCHERU, SAI RAM COLONY', 'RAMACHANDRA PURAM, PATANCHERUVU', 'PATANCHERUVU', 'Isnapur MAIN ROAD', 'ISNAPUR MAIN ROAD', 'LAHARI GREEN PARK,MIYAPUR', 'BHEL,LINGAMPALLY', 'PATANCHERUVU, ISNAPUR', 'JNTU', 'Beverly hills', 'Hyderabad to Zaheerabad Highway', 'Kishareddypet', 'Venkat Enclave', 'New Mettuguda Lallaguda Railway Colony', 'sri mytri avasa', 'on requiest', 'malampet', 'mamlampet', 'Deeptishree Nagar', 'Konda Nagar', 'PRAGATINAGAR', 'Malampet', 'financial district Hyderabad', 'SD Road', 'Satya Sai Enclave', 'Amtala ', 'EM Bypass', 'Garia', 'Joka', 'New Alipore', 'Madhyamgram', 'Kamalgazi', 'New Town', 'Rajarhat', 'Chinar Park', 'Narkeldanga', 'Bhawanipore', 'Howrah', 'BT Road', 'Ramchandrapur', 'Rajpur', 'Bangur', 'Narendrapur', 'Baruipur', 'Boral', 'Dum Dum', 'Sonarpur', 'Kestopur', 'Park Circus', 'Dum Dum Park', 'Thakurpukur', 'Kabardanga', 'Barasat', 'Kalikapur', 'Belgharia', 'Chingrighata ', 'Tollygunge', 'Maheshtala', 'Ultadanga', 'Salt Lake', 'Uttarpara', 'Serampore', 'Bhangar', 'Nager Bazar', 'Baguiati', 'Action Area 1', 'Nayabad', 'Dunlop', 'Baishnabghata Bye Lane', 'Raja SC Mallick ROAD', 'Durganagar', 'Selimpur', 'Kanchrapara', 'Noapara', 'Lake Gardens', 'Maniktala', 'Konnagar', 'New Barrakpur', 'Mohisbathan', 'Sodepur', 'Kaikhali', 'Picnic Garden', 'Jadavpur', 'Panihati', 'Badu', 'Behala Chowrasta', 'Behala', 'Kasba', 'Krishnapur', 'kalighat', 'Lake Town', 'Chinsurah', 'Daspara', 'Rajpur Sonarpur', 'Kumrakhali', 'Bypass Road', 'Diamond Park', 'Mukundapur', 'Niranjan Pally', 'Alipore', 'Sinthi More', 'Sector 3 Salt Lake', 'Naktala', 'Birati', 'Entally', 'Bhadreswar', 'Nalta', 'Shobhabazar', 'Budge Budge Road', 'Beliaghata', 'Baltikuri', 'Kankurgachi', 'BataNagar', 'Jyangra', 'Amarpalli', 'Deshpriya Nagar', 'Santragachi', 'Diamond Harbour Road', 'Parnasree Palli', 'Seal Lane', 'Fartabad', 'Hanapara', 'Bablatala', 'Bidhan Pally', 'Ichapore', 'Debpukur', 'Airport', 'Jessore road Ganga Nagar', 'Barrackpore', 'Barat Colony', 'City Centre 2', 'Dhakuria', 'Pailan', 'Sakher Bazar', 'Hooghly', 'Chak Garia', 'Badamtala', 'Raghunathpur', 'Paikpara', 'Sahapur', 'Baguihati', 'Rathtala', 'Bakultala', 'Srirampur', 'Teghoria', 'Amrabati', 'Kalindi', 'Dum Dum Cantt', 'Briji', 'Makhla', 'Haltu', 'Arabinda Pally', 'Brahmapur', 'Theatre Road', 'VIP Haldiram', 'Santoshpur', 'Tangra', 'Ballygunge', 'Jessore Road', 'Sukchar', 'Desopriya Park', 'Prince Anwar Shah Rd', 'Girish Park', 'Khardah', 'Phoolbagan', 'Paschim Barisha', 'Ananya', 'Panchasayar', 'Mahamayatala', 'New Garia', 'Mandirtala', 'Chetla', 'Ballygunge Circular Road', 'Sinthi', 'Lake Market', 'Behala Thana', 'Shova Bazar', 'Shakespeare Sarani ', '5/1B MM Feeder Road.Kolkata-700057', 'Dankuni', 'Madurdaha', 'New Ballygunge', 'Garpar', 'Nabapally', 'Thakurpukur Bazar', 'Usha Park', 'Bhatpara', 'Jheel Bagan', 'Andul Road', 'Parnashree', 'Subhas Sarobar Park', 'Khalisha Kota', 'Sector 1 Salt Lake', 'Patuli', 'Golf Club Road', 'purbachal ', 'Nimta', 'South Sinthee', 'Sarsuna', 'Shyamnagar 24 pgs north', 'Baishnabghata', 'Behala Manton', 'Shibpur', 'Sinthee', 'Swiss Park', 'Jodhpur Garden', 'Bansdroni', 'Tiljala', 'Beleghata', 'Majarhati', 'Ho Chi Minh Sarani', 'Purbalok', 'Nandan Nagar', 'Budherhat', 'Bijoygarh', 'Jodhpur Park', 'Dutta Bagan', 'Action Area 2', 'Survey Park', 'Liluah', 'Hatiara', 'Prafulla Kanan', 'East Kolkata Twp', 'Haridevpur', 'Garia Station', 'Subodh Park', 'Southern Avenue', 'Ariadaha', 'NSC Bose Road', 'VIP Haldirams', 'Harinavi', 'Subodh Garden', 'Bally', 'Dakshinpara', 'Dakshineswar', 'Sirity', 'Naihati', 'Uttarpara Kotrung', 'Bara Nagar', 'Nona Chandanpukur', 'AA 1D NEWTOWN', 'Dakshin Jagatdal', 'Ganguly Bagan', 'Kalyani', 'Dum Dum Metro', 'Gariahat', 'Kankinara', 'Golf Garden', 'Hindmotor', 'Cossipore', 'Sector 5 Salt Lake', 'Omarhati', 'Dash Drone', 'Chotto Chandpur', 'Anandapuri', 'Chandannagar', 'Prince Anwar Shah Road Connector ', 'Thakurpukur 3A Bus Stand', 'Ranikuthi', 'Kadapara', 'Tobin Road', 'Action Area 3', 'New Town Action Area 1', 'Atlas More, Narendrapur', 'Hindustan Park', 'near rabindra sarovar metro Tollygung road', 'near southern Avenue and saratbose road crossing', 'near southern Avenue', 'Rash Behari', 'ca.. block', 'Topsia', 'EM Bypass Extension', 'Tetultala', 'Shyam Nagar', 'Bangur avenue', 'Behala Shakuntala Park', 'Sarkarhat', 'Ritchie Road', 'Purba Barisha', 'Bangur Avenue', 'Ajoy Nagar', 'New Town Action Area 1C', 'Hastings', 'Safui Para', 'Purbachal Kalitala', 'RB Connector', 'Michael Nagar', 'Madhyamgram, Doltala', 'BT collage, Jessore road', 'Michael nagar, Birati', 'Mourigram', 'AJC Bose Road', 'Minto Park', 'New Town Action Area 1D', 'New Town Action Area 2D', 'Rabindra Sarova Metro', 'BL Saha Road', 'Anandapur', 'Hussainpur', 'Bonhooghly', 'Satgachi', 'HB Town', 'Sector 2 Salt Lake', 'kalyani a block', 'Gola Ghata', 'Mission Bazar', 'Samarpally', 'SN Roy Road', 'Gora Bazar', 'Tali Park', 'Vivekananda Nagar ', 'Doltala', 'Dhamaitala', 'Bandel', 'PIPULPATI, CHINSURAH', 'New Town Action Area 1B', 'Dover Terrace', 'Ruby Park East', 'on embypass', 'Tara Park', 'Dhandevi Khanna Road', 'Golf Green', 'Action Area 2C', 'Sarat Bose Road', 'Kasba Siemens', 'New Town Action Area 2B', 'Ashok Nagar', 'Laskarpur', 'Shyam Bazaar', 'Dakshin Raipur', 'Nepalgunj Tollygunge', 'Bakul Bagan', 'telipukur', 'Dashadrone', 'Mankundu', 'Natunpara', 'Maula Ali', 'Shalimar', 'Basunagar', 'Rishra', 'Atghara', 'Sreerampur', 'Rajdanga', 'Bagha Jatin', 'Hindustan More', 'hindustha road', 'new alipore block G', 'Tollygunge Phari', 'deshpriya park', 'Shyamnagar', 'bd block', 'Surer Math', 'Sodepure', 'Tollygunge Karunamoyee', 'Narayanpur', 'Agarpara', 'Rajarhat chowmatha kol', 'rajathat chowmatha', 'Action Area 2B', 'Indrajit Pally', 'be... block', 'Hridaypur', 'ca block', 'Nandan Kanan', 'Rajarhat Kolkata east', 'Seth Bagan', 'Sammilani Park', 'Natunbazar.dumdum cantonment', '39/A/2, Sri Ram Thakur Road. Kolkata 700032', '122/2/2E SN Sarani. Kolkata 700026', 'Purbachal', 'Kalua', 'Behala Unique Park', 'Ballygunge Place', 'Silpara', 'baguihati jyangra', 'Tagore Park', 'Rekjuani', 'Jayrampur Post Office, Behala Chourasta', 'Purba Sinthi', 'BANGUR AVENUE', 'Kalipark', 'Moore Avenue', 'Badam Talla', 'New Santoshpur', 'Postal Park', 'Fern Road', 'Jogendra Garden', 'Barhans', 'Ambuja UDITA, Survey Park,Santoshpur', 'New Town biswa bangla gate', 'Mandevilla Garden', 'kamalgachi', 'Camac Street', 'Manoharpukur', 'Bosepukur', 'mayfair road', 'Hazra', 'Metropolitan ', 'sunny park', 'P Majumder Road', 'Panditiya Road ', 'Lansdown', 'Garcha', 'Naipukur', 'Ballygunge Gardens', 'Rajabasanta Roy Road', 'Auckland Square', 'Azadgarh', 'South Bankimpally', 'Kalindi Jessore Road', 'Jawpur', 'Milk Colony', 'Christopher Road', 'Gitanjali Metro Station', 'Sarada Park', 'Chakraberia ', 'Brahmapur Christian Para', 'Bansdroni Park', 'Gostotala New Scheme', 'Nandi Bagan', 'Belgachia', 'Shibrampur', 'Mahish Bathan', 'New Town Action area 1A', 'Lake Town/kalindi', 'Ruby Hosp Main Road', 'P.A Shah Connector', 'Rajarhat Main Road', 'Salap', 'Domjur', 'Narendrapur Sonapur Crossing', 'Dhalai Bridge', 'Ramlal Bazaar', 'Mission Pally', 'Saroda Garden Diamond harbour Road', 'Sabedabagan', 'Rowland Row', 'Elgin Road', 'Muchipara', 'Zarda Bagan', 'East Topsia', 'Paddapukur', 'Sealdah', 'Khanna', 'Subhash Nagar', 'Belur', 'Kudghat', 'joka metro', 'Ekdalia', 'Block C, Bangur', 'Lake Range', 'Bondal Gate', 'Harish Mukherjee Road', 'Garia Gardens', 'Kamalgachhi More', 'East Park', 'Tram Depot', 'Paschim Putiary', 'Friends Eleven', 'Ravindra Pally', 'Vivekananda Park', 'Baghajatin Place', 'VIP Road', 'Srinagar', 'Kalitala', 'Bhadrakali', 'Uniworld City', 'Hatiara Extention', 'Action Area 2 New Town', 'Raipur', 'Matkol', 'Golpark', 'New Town Actuon Area 2D', 'New Town Action Area IID', 'North Purbachal', 'Sucheta Nagar', 'Shanti Pally', 'Action Area 2 B', 'Keyatala', 'Dr rajendra road', 'Southend Park', 'Biman Nagar', 'Rabindra Nagar', 'Balkum', 'Mulund West', 'Borivali East', 'Goregaon East', 'Taloja', 'Santacruz East', 'Lower Parel', 'Chembur', 'New Panvel', 'Kalyan West', 'Naya Nagar', 'Vikhroli East', 'Virar West', 'Rasayani', 'Dindoshi', 'Kalwa', 'Majiwada', 'Ambernath', 'Vartak Nagar', 'Mira Bhayandar', 'Thane West', 'Wadala', 'Sector 12 Kharghar', 'Jogeshwari West', 'Panvel', 'Vangani', 'Sector 20 Kharghar', 'Marol', 'Teachers Colony', 'Diva', 'Ulwe', 'Sector 8 Airoli', 'Kharghar', 'Kalyan East', 'Dronagiri', 'Roadpali', 'kurla west', 'Kasar vadavali', 'Nerul', 'Dombivli East', 'Ghatkopar East', 'Manpada', 'LBS Marg', 'Seawoods', 'Parel', 'Mahim West', 'Pokharan Road', 'Hiranandani Gardens Powai', 'Matunga East', 'Oshiwara', 'Kamothe', 'Ghansoli', 'Versova', 'Sakinaka', 'Panch Pakhadi', 'Khadakpada', 'Badlapur East', 'Titwala', 'Kandivali East', 'Andheri East', 'Hariyali', 'kavesar', 'Vashi', 'Maratha Colony', 'SV Patel Nagar', 'Malad West', 'Sanpada', 'Vasai', 'Kalher', 'Koperkhairane', 'Goregaon West', 'Thakur Village', 'Louis Wadi', 'Sector 2 Ulwe', 'Worli', 'Kalamboli', 'Kandivali West', 'Pokhran 2', 'MIDC Industrial Area', 'Sector 30A Vashi', 'Vasant Vihar', 'Sainath Nagar', 'Andheri West', 'Mulund East', 'Chembur East', 'Santacruz West', 'Karjat', 'Sahar Road', 'Vijay Nagari', 'Raheja Vihar', 'Vardhman Nagar', 'Asha Nagar', 'Airoli', 'Shivaji Nagar', 'Rajan Pada', 'Sector 34A Kharghar', 'Murbad', 'Colaba', 'Mindspace', 'Old Panvel', 'Sector 16 Koparkhairane', 'Vasai East', 'Jagdusha Nagar', 'Vasai West', 'Bhandup West', 'Powai', 'Kanjurmarg East', 'New Rajaram Wadi', 'Sector 35I Kharghar', 'Nahur', 'Sector 30 Kharghar', 'Upper Govind Nagar', 'Kulgaon', 'Neral', 'Bolinj', 'Mhada Colony', 'Ambivli', 'RCF Colony Chembur', 'Deonar', 'Kolshet Road', 'Jogeshwari East', 'Pushpak Nagar', 'JK Gram', 'Chandivali', 'Anand Nagar', 'Dhokali', 'Kurla East', 'Sion East', 'JVLR', 'Mahalaxmi', 'Kolshet', 'Sector 17 New Panvel East', 'Sector 23 Taloja', 'Sector 8 New panvel', 'Sector 34C Kharghar', 'Ghot', 'Khanda Colony', 'Ghatkopar West', 'Karanjade', 'Bevarly Park', 'thakurli', 'Bandra West', 'Vichumbe', 'Dahisar West', 'Manisha nagar', 'Shapur Baug', 'Sector 25 Nerul', 'Kandarpada', 'Sector 34 Kamothe', 'Virar East', 'Sector 5 Ulwe', 'Mira Road East', 'Sector 17 Ulwe', 'Borivali West', 'Sector 2 Charkop', 'Dombivli West', 'Mira Road', 'Naigaon East', 'Adivali', 'Shanti Park', 'Ambernath West', 'Lokmanya Nagar', 'Sector 27 Kharghar', 'Adharwadi', 'Tagore Nagar', 'Sector 50 Seawoods', 'Wadala West', 'Bandra', 'Balkum Pada', 'Ghodbunder Road', 'Sector 18 Kamothe', 'Ulhasnagar', 'Shivaji Park', 'Worli Seaface', 'Sector 9 Kopar Khairane', 'Chandan Shanti', 'Shilphata', 'Dahisar East', 'Pandurang Wadi', 'Sector 29 Vashi', 'Badlapur West', 'Kanjurmarg west', 'Mumbai Central', 'Khoni', 'Sector 14 Koparkhairane', 'Sector 35E Kharghar', 'Gauripada', 'Ghatla', 'Kasheli', 'Bhiwandi', 'Sector 16 Ulwe', 'Shakti Nagar', 'Matunga', 'Shirdon', 'Owale', 'Sector 11 Kamothe', 'Shri Ram Nagar', 'Dadar East', 'Matunga West', 'Tardeo', '4 Bunglows', 'Sector 36 Kamothe', 'Kamatghar', 'Vaishali Nagar', 'Sambhaji Nagar', 'Turbhe', 'Sector 19 Kharghar', 'Khalapur Magic Hill Phase 1', 'Shivai Nagar', 'Sindhi Society Chembur', 'Kolshet Industrial Area', 'Asangaon', 'Belapur', 'Chunabhatti', 'Devipada', 'Sewri', 'Jui Nagar', 'Khar West', 'Eksar', 'Ram Krishna Nagar', 'Vasind', 'Pant Nagar', 'Hiranandani Estate', 'Jijamata Nagar', 'Sector 8 Sanpada', 'Anjurdive', 'Bhadra Nagar', 'Wadala East', 'Sector 4 Kopar Khairane', 'Chembur West', 'Sector 36 Kharghar', 'Amboli', 'Mahakali Caves', 'DN Nagar', 'Sector 11 Kharghar', 'Sector 15 Belapur', 'Naupada', 'Vile Parle West', 'Nirmal Nagar', 'Teen Hath Naka', 'Byculla', 'Waghbil', 'Sector 19 Kamothe', 'Chakala', 'Nalasopara West', 'Sector 31 Kamothe', 'Sector 10 Kharghar', 'Juhu', 'Chirak Nagar', 'Bandra Kurla Complex', 'Sector 20 Koparkhairane', 'Miragaon', 'Kalyan', 'Brahmand', 'Sector 14 Vashi', 'Tata Colony', 'Vaithara Nagar', 'Maneklal Estate', 'Kasaravadi', 'Vile Parle East', 'Prabhadevi', 'Dadar West', 'Rohinjan', 'Sector 5 Kamothe', 'Sector 16 Kalamboli', 'Taloja Panchanand', 'Takshashila Nagar', 'Sector 11 Koparkhairane', 'Lokhandwala Andheri West', 'Sector 8A Airoli', 'IC Colony', 'Sector 10 Kopar Khairane', 'Sector 15 Kopar Khairane', 'Sector 23 Ulwe', 'Sector 21 Kamothe', 'Sector 13 Kharghar', 'Sai Wadi', 'Parsik Nagar ', 'Malad East', 'Lokhandwala Kandivali East', 'Sector 22 Kamothe', 'Chandrapada', 'Dadar', 'Model Town', 'Shedung', 'Byculla East', 'Patlipada', 'Adaigaon', 'Wadeghar', 'Kharkar Alley', 'Sector 35G Kharghar', 'Sector 34B Kharghar', 'Sector 18 Kharghar', 'Vrindavan', 'Pali Hill', 'Tilak Nagar', 'Byculla West', 'Sector 7 Kharghar', 'Badlapur', 'Sector 10 New Panvel', 'savarkar road', 'Dattanagar', 'Nilje Gaon', 'Sector 9 Ulwe', 'Tembhi Naka', 'Sector 6 Nerul', 'Poisar', 'Charkop', 'Sector 15 Kharghar', 'Palava City By Lodha', 'YK Nagar NX, Near Expert International High School, Virar west', 'Nallasopara', 'Sector 18 Ulwe', 'Gamdevi', 'Bhayander West', 'Nevali', 'Sector 20 Roadpali', 'Sector 6 Kharghar', 'Indralok Phase 3', 'Sector 25 Khandeshhwar', 'Sector 19 Ulwe', 'Napean Sea Road', 'Sector 44A Seawoods', 'Sector 17 Kamothe', 'Sector 20 Nerul', 'Sector 18 Kopar Khairane', 'Sector 15 Ghansoli', 'Sector 3 Ulwe', 'Sector 30 Belapur', 'Sion West', 'Palaspe Phata', 'Vinay Nagar', 'Rabodi', 'Shastri Nagar', 'Ambernath East', 'Poonam Gardens', 'Sector 29 Nerul', 'Jvpd Scheme', 'kharghar,sector 23', 'Sector 25 Ulwe', 'Sector 17 Roadpali', 'khopat', 'Taloja Phase 1', 'Sagaon', 'Nerul East', 'Sector-46A Seawoods', 'Sector 27 Nerul', 'Sector 46 A Seawoods', 'Owe Village', 'Magathane', 'Mahajan Wadi', 'Pale Gaon', 'Devdaya Nagar ', 'Dhakoji Sethpada', 'Sector 19 Airoli', 'Sector 5 New Panvel East', 'Juhu Circle', 'Sector 8 Charkop', 'Wagle Estate', 'Sector 35D Kharghar', 'Sector 16 Kharghar', 'Dombivli', 'Katrap', 'Sector 17 Kalamboli', 'Sector 8 Ulwe', 'Aarey Milk Colony', 'Sector 8 Ghansoli', 'Sector 24 Kamothe', 'Nehru Nagar', 'Bandra East', 'Sector 16A Nerul', 'Sector 4 Kalamboli', 'Sector 23 Kharghar', 'Sector 7 Kamothe', 'Sector 9 Sanpada', 'Sector 19A Nerul', 'Pirojshanagar', 'Kannamwar Nagar 1', 'Bhayander East', 'Kannamwar Nagar 2', 'Sector 11 Sanpada', 'Hari Om Nagar', 'Sector 20 Kamothe', 'Sector 38 Seawoods', 'Willingdon', 'Nalasopara East', 'Kutak Bandhan', 'Poonam Sagar Complex', 'new panvel sec 15A', 'Virar', 'Sector 17 Kopar Khairane', 'Malabar Hill', 'Sector 11 Ghansoli', 'Sector 7 Kopar Khairane', 'Hatkesh Udhog Nagar', 'Sonar Pada', 'Sector 21 Ulwe', 'Sector 20 Ulwe', 'Sector 4 Kharghar', 'Prem Nagar', 'Sector 21 Ghansoli', 'Golavli', 'Sector 15 Kamothe', 'Vikhroli West', 'Sector 18 New Panvel East', 'Hiranandani Meadows', 'Sector 29C Airoli', 'Jankalyan Nagar', 'Sector 21 Kharghar', 'Bhayandarpada', 'Garodia Nagar', 'Sector 25 Kamothe', 'Sector 35 Kamothe', 'vichumbe new panvel', 'Sector 9 New Panvel', 'Usarli Khurd', 'Mint Colony', 'Parel East', 'Curry Road East', 'LIC Colony', 'Police Colony', 'Sector 37, Kharghar Navi Mumbai', 'Vazira', 'Worli Hill', 'Sector 9 Airoli', 'Shahbaz Village', 'Somwari Bazar', 'Naidu Colony', 'Juhu Lane', 'goregaon east', 'Mahesh Nagar', 'Sai Nagar', 'Sector 42 Seawoods', 'Sector 16 Sanpada', 'Sector 8 Kopar Khairane', 'Sector 3 Kharghar', 'Sector 11 Khanda Colony', 'Chandanwadi', 'Gulmohar Colony', 'Juhu Scheme', 'Khandeshwar', 'Sector 58 Seawoods', 'Seven Bunglow', 'Veera Desai Road', 'Veera Desai Industrial Estate', 'Hanuman Chowk', 'Palm Beach', 'dn nager', 'Chincholi Bunder', 'Dahanukar Wadi', 'Mathuras road kandivali', 'Siddharth Nagar', 'Babrekar Nagar', 'Vithaldas Nagar', 'Sector 4 Ghansoli', 'Sector 2 Ghansoli', 'Louiswadi thane west 400604.', 'Colaba Post Office', 'Prathana Samaj', 'Kewale', 'Kalina', 'Kanchpada', 'Sector 20B Airoli', 'Sector 10A Airoli', 'Sector 19 Koper Khairane', 'Mota Nagar', 'sector - 9 new panvel East', 'Khalapur'];
+        const selectElement = document.getElementById("locality");
+        locality_names.forEach(loc => {
+            // Create a new option element
+            const option = document.createElement('option');
+
+            // Set the option's value and displayed text
+            option.value = loc; // Value sent to the server
+            option.textContent = loc; // Text user sees
+            selectElement.appendChild(option);
+        })
+</script>
+        <div class="footer-note">
+            <i class="fa-solid fa-shield-halved"></i>
+            Enter property details carefully for a more meaningful estimate.
+        </div>
+    </main>
+
+    </div>
+
+</body>
+</html>
+
+
+
+

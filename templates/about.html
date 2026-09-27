@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --dark: #111827;
+            --text: #475569;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+    
+
+        /* Hero */
+        .about-hero {
+            position: relative;
+            overflow: hidden;
+            padding: 100px 0 90px;
+            color: white;
+            background: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.35), transparent 30%), radial-gradient(circle at 90% 20%, rgba(59, 130, 246, 0.30), transparent 28%), linear-gradient(135deg, #111827, #312e81, #4f46e5);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .about-hero h1 {
+            max-width: 800px;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.05;
+            font-weight: 850;
+            letter-spacing: -2px;
+        }
+
+        .about-hero p {
+            max-width: 700px;
+            margin-top: 25px;
+            font-size: 1.12rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.78);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn-main {
+            padding: 13px 22px;
+            border: 0;
+            border-radius: 12px;
+            background: white;
+            color: var(--primary-dark);
+            font-weight: 750;
+            text-decoration: none;
+            transition: 0.25s ease;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-2px);
+            color: var(--primary-dark);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-outline {
+            padding: 13px 22px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.08);
+            transition: 0.25s ease;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: white;
+        }
+
+        /* Section */
+        .section {
+            padding: 85px 0;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .section-subtitle {
+            max-width: 680px;
+            margin: 15px auto 0;
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* About Card */
+        .about-card {
+            height: 100%;
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            background: white;
+            box-shadow: 0 15px 45px rgba(15, 23, 42, 0.06);
+        }
+
+        .about-card h3 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .about-card p {
+            color: var(--text);
+            line-height: 1.8;
+            margin-bottom: 0;
+        }
+
+        .icon-box {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            margin-bottom: 22px;
+            color: white;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        /* How it works */
+        .step-card {
+            position: relative;
+            height: 100%;
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: white;
+            transition: 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.09);
+        }
+
+        .step-number {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            background: #eef2ff;
+            color: var(--primary-dark);
+            font-weight: 800;
+        }
+
+        .step-card h4 {
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .step-card p {
+            color: var(--text);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* Technology */
+        .tech-section {
+            background: #eef2ff;
+        }
+
+        .tech-card {
+            height: 100%;
+            padding: 26px;
+            border: 1px solid rgba(99, 102, 241, 0.12);
+            border-radius: 18px;
+            background: white;
+        }
+
+        .tech-card i {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .tech-card h5 {
+            font-weight: 800;
+        }
+
+        .tech-card p {
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Features */
+        .feature-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px;
+            border-radius: 15px;
+            background: white;
+            border: 1px solid var(--border);
+        }
+
+        .feature-check {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: #16a34a;
+            background: #dcfce7;
+        }
+
+        .feature-item strong {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .feature-item span {
+            color: var(--text);
+            font-size: 0.92rem;
+        }
+
+        /* CTA */
+        .cta {
+            margin-bottom: 80px;
+            padding: 55px;
+            border-radius: 28px;
+            color: white;
+            background: radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.14), transparent 30%), linear-gradient(135deg, #4f46e5, #7c3aed);
+        }
+
+        .cta h2 {
+            font-weight: 850;
+            margin-bottom: 12px;
+        }
+
+        .cta p {
+            max-width: 650px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.7;
+        }
+
+        /* Footer */
+        footer {
+            padding: 28px 0;
+            border-top: 1px solid var(--border);
+            background: white;
+            color: #64748b;
+        }
+
+        .footer-brand {
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .about-hero {
+                padding: 75px 0;
+            }
+
+            .about-hero h1 {
+                letter-spacing: -1px;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .cta {
+                padding: 35px 25px;
+                border-radius: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/static.css') }}">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+
+        <nav class="navbar-custom d-flex justify-content-between align-items-center">
+
+            <div class="logo" onclick="window.location.href = '/'">
+                <i class="fa-solid fa-building"></i>
+                <span>AI Real Estate</span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="/#modules">Features</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/map">Map</a></li>
+            </ul>
+
+            <button class="nav-button" onclick="openPricePrediction()">
+                Predict Price
+            </button>
+
+        </nav>
+        <div class="menu mt-4">
+            <span class="hero-badge">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                AI-Powered Real Estate Analytics
+            </span>
+
+            <h1>
+                Smarter insights for
+                <span>better property decisions.</span>
+            </h1>
+
+            <p>
+                AI Real Estate Price Prediction is a machine-learning-powered
+                application designed to estimate property prices using important
+                characteristics such as location, area, bedrooms, floors,
+                furnishing, property type, age and other property attributes.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="/pred" class="btn-main">
+                    <i class="fa-solid fa-chart-line me-2"></i>
+                    Try Price Prediction
+                </a>
+
+                <a href="#how-it-works" class="btn-outline">
+                    Learn How It Works
+                    <i class="fa-solid fa-arrow-down ms-2"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+        </section>
+
+        <!-- About Project -->
+
+        <section class="section">
+
+            <div class="container">
+
+                <div class="text-center mb-5">
+
+                    <h2 class="section-title">
+                        About the Project
+                    </h2>
+
+                    <p class="section-subtitle">
+                        The system combines property information with a trained
+                        machine learning model to provide an estimated real estate
+                        price based on the characteristics entered by the user.
+                    </p>
+
+                </div>
+
+
+                <div class="row g-4">
+
+                    <div class="col-lg-4">
+
+                        <div class="about-card">
+
+                            <div class="icon-box">
+                                <i class="fa-solid fa-brain"></i>
+                            </div>
+
+                            <h3>Machine Learning</h3>
+
+                            <p>
+                                The application uses a trained machine learning model
+                                to identify relationships between property features
+                                and their corresponding prices.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-lg-4">
+
+                        <div class="about-card">
+
+                            <div class="icon-box">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+
+                            <h3>Location-Aware</h3>
+
+                            <p>
+                                Property location and locality information are included
+                                as important inputs, helping the system consider
+                                location-related differences in estimated prices.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-lg-4">
+
+                        <div class="about-card">
+
+                            <div class="icon-box">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+
+                            <h3>Fast Prediction</h3>
+
+                            <p>
+                                Users can enter property details through a simple
+                                interface and receive a predicted price without
+                                manually performing complex calculations.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- How It Works -->
+
+        <section class="section" id="how-it-works">
+
+            <div class="container">
+
+                <div class="text-center mb-5">
+
+                    <h2 class="section-title">
+                        How It Works
+                    </h2>
+
+                    <p class="section-subtitle">
+                        The prediction process follows a simple workflow from
+                        property information to estimated price.
+                    </p>
+
+                </div>
+
+
+                <div class="row g-4">
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="step-card">
+
+                            <div class="step-number">01</div>
+
+                            <h4>Enter Details</h4>
+
+                            <p>
+                                Provide information about the property, including
+                                bedrooms, area, floor, furnishing and other details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="step-card">
+
+                            <div class="step-number">02</div>
+
+                            <h4>Process Data</h4>
+
+                            <p>
+                                The application processes the submitted property
+                                attributes into the format required by the prediction
+                                model.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="step-card">
+
+                            <div class="step-number">03</div>
+
+                            <h4>Model Analysis</h4>
+
+                            <p>
+                                The trained machine learning model evaluates the
+                                supplied features and calculates an estimated property
+                                price.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="step-card">
+
+                            <div class="step-number">04</div>
+
+                            <h4>View Result</h4>
+
+                            <p>
+                                The estimated price is displayed through the web
+                                interface so the user can easily understand the result.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Technologies -->
+
+        <section class="section tech-section">
+
+            <div class="container">
+
+                <div class="text-center mb-5">
+
+                    <h2 class="section-title">
+                        Technologies Used
+                    </h2>
+
+                    <p class="section-subtitle">
+                        The project combines web development and machine learning
+                        technologies to provide an interactive prediction system.
+                    </p>
+
+                </div>
+
+
+                <div class="row g-4">
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="tech-card">
+
+                            <i class="fa-brands fa-python"></i>
+
+                            <h5>Python</h5>
+
+                            <p>
+                                Used for the application logic, data processing and
+                                machine learning workflow.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="tech-card">
+
+                            <i class="fa-solid fa-server"></i>
+
+                            <h5>Flask</h5>
+
+                            <p>
+                                Provides the backend web framework and connects the
+                                user interface with the prediction model.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="tech-card">
+
+                            <i class="fa-solid fa-chart-simple"></i>
+
+                            <h5>Machine Learning</h5>
+
+                            <p>
+                                Used to learn patterns from property data and generate
+                                price estimates for new property inputs.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6 col-lg-3">
+
+                        <div class="tech-card">
+
+                            <i class="fa-brands fa-html5"></i>
+
+                            <h5>HTML & CSS</h5>
+
+                            <p>
+                                Used to create the responsive and interactive
+                                front-end interface of the application.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Features -->
+
+        <section class="section">
+
+            <div class="container">
+
+                <div class="row align-items-center g-5">
+
+                    <div class="col-lg-6">
+
+                        <h2 class="section-title mb-3">
+                            What the system considers
+                        </h2>
+
+                        <p class="section-subtitle text-start mx-0">
+                            The prediction form is designed around multiple property
+                            characteristics that can contribute to the estimated
+                            property price.
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-lg-6">
+
+                        <div class="feature-list">
+
+                            <div class="feature-item">
+
+                                <div class="feature-check">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Property Size</strong>
+                                    <span>
+                                        Area and bedroom information.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="feature-item">
+
+                                <div class="feature-check">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Building Information</strong>
+                                    <span>
+                                        Floor number, total floors and property age.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="feature-item">
+
+                                <div class="feature-check">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Property Characteristics</strong>
+                                    <span>
+                                        Furnishing, property type and facing.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="feature-item">
+
+                                <div class="feature-check">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Location Information</strong>
+                                    <span>
+                                        City and locality details.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="feature-item">
+
+                                <div class="feature-check">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Property Status</strong>
+                                    <span>
+                                        Additional property attributes such as
+                                        luxury and freehold status.
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- CTA -->
+
+        <section class="container">
+
+            <div class="cta">
+
+                <div class="row align-items-center g-4">
+
+                    <div class="col-lg-8">
+
+                        <h2>
+                            Ready to estimate a property price?
+                        </h2>
+
+                        <p class="mb-0">
+                            Enter the property details and let the machine learning
+                            model generate an estimated price based on the information
+                            provided.
+                        </p>
+
+                    </div>
+
+                    <div class="col-lg-4 text-lg-end">
+
+                        <a href="/pred" class="btn-main">
+                            Start Prediction
+                            <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+    </div>
+    </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

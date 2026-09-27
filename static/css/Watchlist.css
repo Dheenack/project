@@ -1,0 +1,139 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+}
+
+/* Navbar */
+
+nav{
+    background:#4E342E;
+    color:white;
+    padding:18px 60px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    background:#6D4C41;
+    padding:10px 20px;
+    border-radius:8px;
+    transition:.3s;
+}
+
+nav a:hover{
+    background:#8D6E63;
+}
+
+/* Container */
+
+.container{
+    width:90%;
+    max-width:900px;
+    margin:40px auto;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
+
+.container h1{
+    text-align:center;
+    color:#4E342E;
+    margin-bottom:25px;
+}
+
+.form{
+    display:grid;
+    gap:15px;
+}
+
+.form input{
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+.form input:focus{
+    outline:none;
+    border:2px solid #4E342E;
+}
+
+.form button{
+    padding:12px;
+    background:#4E342E;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:17px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.form button:hover{
+    background:#6D4C41;
+}
+
+#watchlist{
+    margin-top:30px;
+}
+
+.property-card{
+    background:#f8f8f8;
+    border-left:5px solid #4E342E;
+    padding:20px;
+    margin-bottom:15px;
+    border-radius:10px;
+}
+
+.property-card h3{
+    color:#4E342E;
+    margin-bottom:8px;
+}
+
+.property-card p{
+    margin:5px 0;
+}
+
+.delete-btn{
+    margin-top:10px;
+    padding:8px 15px;
+    background:#d32f2f;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.delete-btn:hover{
+    background:#b71c1c;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+nav{
+    flex-direction:column;
+    gap:15px;
+}
+
+.container{
+    width:95%;
+}
+
+}

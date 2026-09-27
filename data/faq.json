@@ -1,0 +1,41 @@
+{
+    "faqs": [
+        {
+            "question": "What is this website?",
+            "keywords": [
+                "website",
+                "project",
+                "about"
+            ],
+            "answer": "This is an AI-powered real estate price prediction platform."
+        },
+        {
+            "question": "How does price prediction work?",
+            "keywords": [
+                "prediction",
+                "price",
+                "predict"
+            ],
+            "answer": "The system predicts property prices using factors such as location, area, bedrooms, floor, furnishing, property age and other property characteristics."
+        },
+        {
+            "question": "How do I predict a property price?",
+            "keywords": [
+                "predict price",
+                "prediction form",
+                "calculate"
+            ],
+            "answer": "Open the Prediction page, enter the property details and submit the form to receive the estimated price."
+        },
+        {
+            "question": "Which locations are supported?",
+            "keywords": [
+                "city",
+                "location",
+                "locations",
+                "cities"
+            ],
+            "answer": "The available locations are based on the property dataset used by the application."
+        }
+    ]
+}
